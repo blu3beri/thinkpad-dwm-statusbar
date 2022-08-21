@@ -29,15 +29,16 @@ fn batteries() -> std::io::Result<(String, String)> {
 }
 
 fn battery(id: u8) -> std::io::Result<String> {
+    let mut bat_prefix: String = id.to_string();
     let bat_status = read(format!("/sys/class/power_supply/BAT{id}/status"))?;
 
-    if bat_status == "Charging" {
-        return Ok(String::from("C"))
+    if bat_status.contains("Charging") {
+        bat_prefix = String::from("C");
     }
     
     let cap = read(format!("/sys/class/power_supply/BAT{id}/capacity"))?;
 
-    Ok(format!("{cap}%"))
+    Ok(format!("{bat_prefix}: {cap}%"))
 }
 
 fn sound() -> std::io::Result<String> {
@@ -81,7 +82,7 @@ fn main() -> std::io::Result<()> {
         let (bat0, bat1) = batteries()?;
         let vol = sound()?;
         let brightness = backlight()?;
-        let name = format!("[V: {vol}] [B: {brightness}] [0: {bat0} 1: {bat1}] [{time}]\0").replace("\n", "");
+        let name = format!("[V: {vol}] [B: {brightness}] [{bat0} {bat1}] [{time}]\0").replace("\n", "");
 
         unsafe { XStoreName(display, window, name.as_ptr()) };
         unsafe { XFlush(display) };
