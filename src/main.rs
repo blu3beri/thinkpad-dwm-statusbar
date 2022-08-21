@@ -1,6 +1,8 @@
 use std::path::Path;
 use std::fs::File;
-use std::io::Read; use std::process::Command; use std::time::Duration;
+use std::io::Read; 
+use std::process::Command; 
+use std::time::Duration;
 use chrono::offset::Local;
 
 #[link(name = "X11")]
